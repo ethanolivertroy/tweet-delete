@@ -1,0 +1,47 @@
+
+function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function deleteTweets() {
+    while (true) {
+        // First, look for the retweet button
+        const retweetButton = document.querySelector('[data-testid="unretweet"]');
+        if (retweetButton) {
+            retweetButton.click();
+            await delay(2000);
+
+            // Confirm the unretweet action
+            const confirmButton = document.querySelector('[data-testid="unretweetConfirm"]');
+            if (confirmButton) {
+                confirmButton.click();
+                await delay(2000);
+            }
+        } else {
+            // Look for the caret button to delete tweets
+            const caretButton = document.querySelector('[role="button"][data-testid$="caret"]');
+            if (!caretButton) {
+                window.scrollTo(0, document.body.scrollHeight);
+                await delay(1000);
+                continue;
+            }
+
+            caretButton.click();
+            await delay(2000);
+
+            const deleteMenuItem = document.querySelector('div[role="menuitem"]');
+            if (deleteMenuItem && deleteMenuItem.innerText.toLowerCase().includes('delete')) {
+                deleteMenuItem.click();
+                await delay(2000);
+
+                const confirmButton = document.querySelector('[data-testid$="confirmationSheetConfirm"]');
+                if (confirmButton) {
+                    confirmButton.click();
+                    await delay(2000);
+                }
+            }
+        }
+    }
+}
+
+deleteTweets();
